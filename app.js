@@ -1,25 +1,33 @@
 const sudoku_grid_size = 9;
 const grid_xoffset = 50;
 const grid_yoffset = 50;
-const cell_width = 80;
+const cell_width = 100;
+const cell_color = 240;
+const background_color = 75;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
-  background(220);
+  background(background_color);
   drawGrid();
 }
 
 function drawGrid() {
+  fill(180);
+  rect(
+    grid_xoffset,
+    grid_yoffset,
+    cell_width * sudoku_grid_size,
+    cell_width * sudoku_grid_size
+  );
+  stroke(0);
   for (let i = 0; i < sudoku_grid_size + 1; i++) {
     if (i % 3 == 0) {
-      stroke(255);
-      strokeWeight(3);
+      strokeWeight(6);
     } else {
-      stroke(0);
-      strokeWeight(2);
+      strokeWeight(1);
     }
     x1 = i * cell_width + grid_xoffset;
     y1 = grid_yoffset;
