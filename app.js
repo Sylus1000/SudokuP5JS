@@ -1,8 +1,6 @@
 const sudoku_grid_size = 9;
-const grid_xoffset = 50;
-const grid_yoffset = 50;
+const grid_offset = 50;
 const cell_width = 100;
-const cell_color = 240;
 const background_color = 75;
 
 function setup() {
@@ -15,10 +13,10 @@ function draw() {
 }
 
 function drawGrid() {
-  fill(180);
+  fill(color(230, 230, 213));
   rect(
-    grid_xoffset,
-    grid_yoffset,
+    grid_offset,
+    grid_offset,
     cell_width * sudoku_grid_size,
     cell_width * sudoku_grid_size
   );
@@ -27,10 +25,10 @@ function drawGrid() {
     if (i % 3 == 0) {
       strokeWeight(6);
     } else {
-      strokeWeight(1);
+      strokeWeight(2);
     }
-    x1 = i * cell_width + grid_xoffset;
-    y1 = grid_yoffset;
+    x1 = i * cell_width + grid_offset;
+    y1 = grid_offset;
     x2 = x1;
     y2 = y1 + sudoku_grid_size * cell_width;
     line(x1, y1, x2, y2);
