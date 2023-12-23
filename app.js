@@ -29,58 +29,61 @@ function initSudokuMap() {
       }
     }
   }
-  //removeDuplicates(); TODO
+  removeDuplicates();
 }
 
 function removeDuplicates() {
   for (let k = 0; k < gamemap.length; k++) {
     for (let l = 0; l < gamemap[k].length; l++) {
-      while (numberAlreadyExists(gamemap, originalValue, k, l)) {
-        gamemap[k][l] = getMissingRowCandidate(gamemap[k]);
+      while (isNumberDuplicateInSudoku(gamemap, gamemap[k][l], k, l)) {
+        gamemap[k][l] = 0;
       }
     }
   }
 }
 
-function getMissingRowCandidate(row) {
-  let candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  console.log(row);
-
-  candidates = candidates.filter((candidate) => !row.includes(candidate));
-
-  return candidates.length > 0
-    ? candidates[Math.floor(Math.random() * candidates.length)]
-    : 0;
-}
-
-function numberAlreadyExists(map, number, i, j) {
-  // No infinite loop in removeDuplicates for zeros
+function isNumberDuplicateInSudoku(map, number, i, j) {
+  // Return false for zeros to avoid infinite loop in removeDuplicates
   if (number === 0) return false;
 
-  // Check row
-  if (map[i].includes(number)) {
-    return true;
-  }
-
-  // Check column
-  for (let k = 0; k < map.length; k++) {
-    if (map[k][j] === number) {
-      return true;
-    }
-  }
-
-  // Check subgrid
-  const subgridSize = Math.sqrt(map.length);
-  const startRow = Math.floor(i / subgridSize) * subgridSize;
-  const startCol = Math.floor(j / subgridSize) * subgridSize;
-
-  for (let row = 0; row < subgridSize; row++) {
-    for (let col = 0; col < subgridSize; col++) {
-      if (map[startRow + row][startCol + col] === number) {
+  // Check row duplicates
+  let rowCount = 0;
+  for (let col = 0; col < map.length; col++) {
+    if (map[i][col] === number) {
+      rowCount++;
+      if (rowCount > 1) {
         return true;
       }
     }
   }
+
+  // Check column duplicates
+  let colCount = 0;
+  for (let row = 0; row < map.length; row++) {
+    if (map[row][j] === number) {
+      colCount++;
+      if (colCount > 1) {
+        return true;
+      }
+    }
+  }
+
+  // Check subgrid duplicates
+  const subgridSize = Math.sqrt(map.length);
+  const startRow = Math.floor(i / subgridSize) * subgridSize;
+  const startCol = Math.floor(j / subgridSize) * subgridSize;
+  let subgridCount = 0;
+  for (let rowOffset = 0; rowOffset < subgridSize; rowOffset++) {
+    for (let colOffset = 0; colOffset < subgridSize; colOffset++) {
+      if (map[startRow + rowOffset][startCol + colOffset] === number) {
+        subgridCount++;
+        if (subgridCount > 1) {
+          return true;
+        }
+      }
+    }
+  }
+  // Return false if there arent any duplicates
   return false;
 }
 
