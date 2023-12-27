@@ -3,7 +3,7 @@ const grid_offset = 25;
 const cell_width =
   Math.min(innerWidth, innerHeight) / sudoku_grid_size - grid_offset / 2;
 const background_color = 75;
-const text_size = cell_width / 3;
+const text_size = cell_width / 2;
 var gamemap = [];
 var numberstack = [];
 
@@ -130,7 +130,66 @@ function recursivelyPushNumber(n, i, j) {
 }
 
 //DONE
+function subgridCompleted(map, i, j) {
+  const subgridSize = getSubgridSize();
+  const startRow = Math.floor(i / subgridSize) * subgridSize;
+  const startCol = Math.floor(j / subgridSize) * subgridSize;
+  let sudoku_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  for (let rowOffset = 0; rowOffset < subgridSize; rowOffset++) {
+    for (let colOffset = 0; colOffset < subgridSize; colOffset++) {
+      let currentNumber = map[startRow + rowOffset][startCol + colOffset];
+      if (currentNumber !== undefined) {
+        removeFromArray(sudoku_numbers, currentNumber);
+      }
+    }
+  }
+  return sudoku_numbers.length === 0;
+}
+
+//DONE
+function removeFromArray(array, element) {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === element) {
+      array.splice(i, 1);
+      break;
+    }
+  }
+}
+
+//DONE
+function positionIsEmpty(map, i, j) {
+  return map[i][j] === 0;
+}
+
+//DONE
+function rowCompleted(map, j) {
+  let sudoku_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  for (let row = 0; row < map.length; row++) {
+    let currentNumber = map[row][j];
+    if (currentNumber !== undefined) {
+      removeFromArray(sudoku_numbers, currentNumber);
+    }
+  }
+  return sudoku_numbers.length === 0;
+}
+
+//DONE
+function columnCompleted(map, i) {
+  let sudoku_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  for (let col = 0; col < map.length; col++) {
+    let currentNumber = map[i][col];
+    if (currentNumber !== undefined) {
+      removeFromArray(sudoku_numbers, currentNumber);
+    }
+  }
+  return sudoku_numbers.length === 0;
+}
+
+//DONE
 function drawGrid() {
+  /////////////////////////////////////////////////////////
+  //DRAW_BOARD_BACKGROUND
+  /////////////////////////////////////////////////////////
   fill(color(230, 230, 213));
   rect(
     grid_offset,
@@ -138,8 +197,10 @@ function drawGrid() {
     cell_width * sudoku_grid_size,
     cell_width * sudoku_grid_size
   );
-  stroke(0);
-  for (let i = 0; i < sudoku_grid_size + 1; i++) {
+  /////////////////////////////////////////////////////////
+  //DRAW_LINES
+  /////////////////////////////////////////////////////////
+  for (let i = 0; i <= sudoku_grid_size; i++) {
     if (i % getSubgridSize() == 0) {
       strokeWeight(4);
     } else {
@@ -152,15 +213,30 @@ function drawGrid() {
     line(x1, y1, x2, y2);
     line(y1, x1, y2, x2);
   }
+  /////////////////////////////////////////////////////////
+  //DRAW_NUMBERS
+  /////////////////////////////////////////////////////////
   textSize(text_size);
-  strokeWeight(2);
   textFont("Courier New");
   fill("black");
   for (let j = 0; j < sudoku_grid_size; j++) {
     for (let k = 0; k < sudoku_grid_size; k++) {
       x1 = j * cell_width + grid_offset + cell_width / 2 - text_size / 4;
       y1 = k * cell_width + grid_offset + cell_width / 2 + text_size / 4;
-      if (gamemap[k][j] != 0) text(`${gamemap[k][j]}`, x1, y1);
+      if (!positionIsEmpty(gamemap, j, k)) {
+        if (
+          subgridCompleted(gamemap, j, k) ||
+          rowCompleted(gamemap, k) ||
+          columnCompleted(gamemap, j)
+        ) {
+          fill("green");
+          text(`${gamemap[j][k]}`, x1, y1);
+          fill("black");
+        } else {
+          text(`${gamemap[j][k]}`, x1, y1);
+        }
+      }
     }
   }
+  /////////////////////////////////////////////////////////
 }
